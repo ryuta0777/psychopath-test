@@ -1,56 +1,221 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>サイコパス診断</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>10問サイコパス診断（ショート向け）</title>
+<style>
+  :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2;--white:#eef2f7}
+  html,body{height:100%}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(180deg,#071021 0%,#0b1220 100%);color:var(--white);display:flex;align-items:center;justify-content:center;padding:20px}
+  .wrap{width:100%;max-width:520px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+  .title{font-size:18px;font-weight:700;margin:0 0 8px}
+  .desc{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .progress{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;margin-bottom:14px}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd9b3);width:0%;transition:width .35s ease}
+  .card{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
+  .qnum{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .qtext{font-size:16px;margin-bottom:12px}
+  .choices{display:flex;gap:8px;flex-wrap:wrap}
+  .choice{flex:1 1 48%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;text-align:center;cursor:pointer;user-select:none}
+  .choice.selected{background:linear-gradient(180deg,rgba(255,184,107,0.12),rgba(255,184,107,0.06));border-color:rgba(255,184,107,0.25)}
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
+  .result{padding:12px;margin-top:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
+  .score{font-size:28px;font-weight:800;color:var(--accent);margin:6px 0}
+  .share{display:flex;gap:8px;margin-top:10px}
+  .small{font-size:12px;color:var(--muted)}
+  @media (max-width:420px){
+    .choice{flex-basis:100%}
+    .wrap{padding:14px}
+  }
+</style>
 </head>
-
 <body>
+<div class="wrap" role="application" aria-label="サイコパス診断アプリ">
+  <div class="title">10問サイコパス診断</div>
+  <div class="desc">直感で答えてね。結果はシェアできるよ。</div>
 
-<h1>サイコパス診断</h1>
+  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 
-<p>人が困っているのを見ると？</p>
+  <div class="card" id="card">
+    <div class="qnum" id="qnum">質問 1 / 10</div>
+    <div class="qtext" id="qtext">読み込み中...</div>
 
-<button onclick="score+=0">助ける</button>
-<button onclick="score+=1">面倒</button>
-<button onclick="score+=2">興味ない</button>
+    <div class="choices" id="choices"></div>
 
-<br><br>
+    <div class="nav">
+      <button class="btn ghost" id="prevBtn" aria-label="前の質問">戻る</button>
+      <button class="btn" id="nextBtn" aria-label="次の質問">次へ</button>
+    </div>
+  </div>
 
-<button onclick="showResult()">結果を見る</button>
-
-<h2 id="result"></h2>
+  <div id="resultArea" style="display:none" class="result" aria-live="polite">
+    <div class="small">診断結果</div>
+    <div class="score" id="scoreText">0</div>
+    <div id="resultText" class="small">ここに結果の説明が入ります。</div>
+    <div class="share">
+      <button class="btn" id="shareBtn">結果をシェア</button>
+      <button class="btn ghost" id="tweetBtn">Twitterで共有</button>
+      <button class="btn ghost" id="retryBtn">もう一度</button>
+    </div>
+  </div>
+</div>
 
 <script>
+/*
+  シンプルな10問診断（教育目的の簡易コンテンツ）
+  各質問は 0〜3 の4段階でスコア化（0:当てはまらない 3:非常に当てはまる）
+  合計点でリスク判定を表示
+*/
 
-let score = 0;
+const questions = [
+  "他人の感情に共感するのが苦手だと感じることがある。",
+  "ルールや法律を破っても罪悪感が薄い方だ。",
+  "自分の利益のためなら嘘をつくことがある。",
+  "他人を操作して自分の目的を達成することがある。",
+  "短期的な刺激やスリルを求める傾向が強い。",
+  "失敗や批判を受けてもあまり気にしない。",
+  "他人の痛みを見ても冷静でいられることがある。",
+  "責任を取るよりも言い訳をすることが多い。",
+  "人間関係を浅く保つ方が楽だと感じる。",
+  "他人の評価より自分の欲求を優先することが多い。"
+];
+
+let answers = new Array(questions.length).fill(null);
+let idx = 0;
+
+const qnum = document.getElementById('qnum');
+const qtext = document.getElementById('qtext');
+const choices = document.getElementById('choices');
+const bar = document.getElementById('bar');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const resultArea = document.getElementById('resultArea');
+const scoreText = document.getElementById('scoreText');
+const resultText = document.getElementById('resultText');
+const shareBtn = document.getElementById('shareBtn');
+const tweetBtn = document.getElementById('tweetBtn');
+const retryBtn = document.getElementById('retryBtn');
+
+function renderQuestion(i){
+  qnum.textContent = `質問 ${i+1} / ${questions.length}`;
+  qtext.textContent = questions[i];
+  choices.innerHTML = '';
+  const labels = [
+    "当てはまらない",
+    "やや当てはまる",
+    "かなり当てはまる",
+    "非常に当てはまる"
+  ];
+  for(let v=0;v<4;v++){
+    const btn = document.createElement('div');
+    btn.className = 'choice';
+    btn.tabIndex = 0;
+    btn.setAttribute('role','button');
+    btn.setAttribute('data-value',v);
+    btn.innerHTML = `<div style="font-size:13px">${labels[v]}</div>`;
+    if(answers[i] === v) btn.classList.add('selected');
+    btn.addEventListener('click', ()=> selectChoice(i,v));
+    btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter') selectChoice(i,v) });
+    choices.appendChild(btn);
+  }
+  updateNav();
+  updateProgress();
+}
+
+function selectChoice(qIndex, val){
+  answers[qIndex] = val;
+  renderQuestion(qIndex);
+}
+
+function updateNav(){
+  prevBtn.disabled = idx === 0;
+  nextBtn.textContent = idx === questions.length -1 ? '診断する' : '次へ';
+}
+
+function updateProgress(){
+  const answered = answers.filter(a=>a!==null).length;
+  const pct = Math.round((idx / (questions.length)) * 100);
+  bar.style.width = `${Math.round(((idx)/questions.length)*100)}%`;
+}
+
+prevBtn.addEventListener('click', ()=>{
+  if(idx>0){ idx--; renderQuestion(idx); }
+});
+
+nextBtn.addEventListener('click', ()=>{
+  if(answers[idx] === null){
+    // 未回答なら軽く促す
+    alert('まずは選択肢を選んでください。');
+    return;
+  }
+  if(idx < questions.length -1){
+    idx++; renderQuestion(idx);
+  } else {
+    showResult();
+  }
+});
 
 function showResult(){
-
-let result = "";
-
-if(score <=5){
-result="あなたは共感力が高いタイプ";
+  // 未回答があれば促す
+  const missing = answers.some(a=>a===null);
+  if(missing){
+    if(!confirm('未回答の質問があります。それでも診断しますか？')) return;
+  }
+  const total = answers.reduce((s,v)=>s + (v===null?0:v),0);
+  scoreText.textContent = total;
+  resultText.textContent = interpretScore(total);
+  document.getElementById('card').style.display = 'none';
+  resultArea.style.display = 'block';
+  bar.style.width = '100%';
 }
 
-else if(score <=10){
-result="一般的な性格";
+function interpretScore(s){
+  // 0-30 の範囲（10問×0-3）
+  if(s <= 6) return '低リスク：共感や社会的ルールを重視する傾向があります。';
+  if(s <= 14) return '中程度：自己中心的な傾向が見られることがあります。注意が必要です。';
+  if(s <= 21) return '高め：冷淡さや操作的な行動が出やすい可能性があります。';
+  return '非常に高い：専門家の評価が望ましいレベルの傾向が見られます。';
 }
 
-else if(score <=15){
-result="サイコパス傾向あり";
-}
+shareBtn.addEventListener('click', async ()=>{
+  const text = `サイコパス診断の結果：スコア ${scoreText.textContent}\n${resultText.textContent}\nあなたも診断してみてね。`;
+  const url = location.href;
+  if(navigator.share){
+    try{
+      await navigator.share({title:'サイコパス診断',text, url});
+    }catch(e){
+      alert('共有がキャンセルされました。');
+    }
+  } else {
+    // フォールバック：クリップボードにコピー
+    try{
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      alert('結果をコピーしました。SNSに貼ってシェアできます。');
+    }catch(e){
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+    }
+  }
+});
 
-else{
-result="かなりサイコパス気質";
-}
+tweetBtn.addEventListener('click', ()=>{
+  const text = `サイコパス診断の結果：スコア ${scoreText.textContent}\n${resultText.textContent}`;
+  const url = location.href;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+});
 
-document.getElementById("result").innerText=result;
+retryBtn.addEventListener('click', ()=>{
+  answers = new Array(questions.length).fill(null);
+  idx = 0;
+  document.getElementById('card').style.display = 'block';
+  resultArea.style.display = 'none';
+  renderQuestion(0);
+});
 
-}
-
+// 初期表示
+renderQuestion(0);
 </script>
-
 </body>
-
 </html>
