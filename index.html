@@ -3,63 +3,80 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>10問サイコパス診断 あなたの危険度は？</title>
+<title>実はあなたも隠れサイコパス？</title>
 <style>
-  :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2;--white:#eef2f7}
+  :root{--bg:#071021;--card:#071827;--accent:#ffb86b;--muted:#9aa4b2;--white:#eef2f7}
+  *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(180deg,#071021 0%,#0b1220 100%);color:var(--white);display:flex;align-items:center;justify-content:center;padding:20px}
-  .wrap{width:100%;max-width:520px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
-  .title{font-size:18px;font-weight:700;margin:0 0 8px}
-  .desc{color:var(--muted);font-size:13px;margin:0 0 14px}
-  .progress{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden;margin-bottom:14px}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(180deg,#071021 0%,#0b1220 100%);color:var(--white);display:flex;align-items:center;justify-content:center;padding:18px}
+  .wrap{width:100%;max-width:560px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+  .title{font-size:20px;font-weight:800;margin:0 0 6px}
+  .subtitle{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .center{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .startCard{width:100%;padding:18px;border-radius:12px;background:rgba(255,255,255,0.02);text-align:center}
+  .startBtn{background:var(--accent);color:#111;padding:12px 18px;border-radius:10px;border:none;font-weight:800;cursor:pointer;font-size:15px}
+  .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden;margin:14px 0}
   .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd9b3);width:0%;transition:width .35s ease}
   .card{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px}
   .qnum{font-size:12px;color:var(--muted);margin-bottom:6px}
-  .qtext{font-size:16px;margin-bottom:12px}
-  .choices{display:flex;gap:8px;flex-wrap:wrap}
-  .choice{flex:1 1 48%;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:10px;border-radius:8px;text-align:center;cursor:pointer;user-select:none}
+  .qtext{font-size:16px;margin-bottom:12px;line-height:1.4}
+  .choices{display:flex;flex-direction:column;gap:8px}
+  .choice{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);padding:12px;border-radius:8px;text-align:left;cursor:pointer;user-select:none}
   .choice.selected{background:linear-gradient(180deg,rgba(255,184,107,0.12),rgba(255,184,107,0.06));border-color:rgba(255,184,107,0.25)}
   .nav{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
   .btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
   .btn.ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
   .result{padding:12px;margin-top:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
-  .score{font-size:20px;font-weight:800;color:var(--accent);margin:6px 0}
-  .share{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .score{font-size:18px;font-weight:900;color:var(--accent);margin:6px 0}
+  .label{font-weight:800;margin-top:6px}
+  .shareGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+  .platform{padding:10px;border-radius:8px;background:rgba(255,255,255,0.02);text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03);font-size:13px}
   .small{font-size:12px;color:var(--muted)}
-  .platform{flex:1 1 48%;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
   @media (max-width:420px){
-    .choice{flex-basis:100%}
-    .platform{flex-basis:48%}
-    .wrap{padding:14px}
+    .wrap{padding:12px}
+    .platform{font-size:12px}
   }
 </style>
 </head>
 <body>
 <div class="wrap" role="application" aria-label="サイコパス診断アプリ">
-  <div class="title">10問サイコパス診断</div>
-  <div class="desc">あなたの危険度は？ 直感で答えてね。結果はSNSでシェアできます。</div>
+  <div class="title">実はあなたも隠れサイコパス？</div>
+  <div class="subtitle">あなたの危険度は？（簡易診断・医療診断ではありません）</div>
 
-  <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+  <div id="startScreen" class="center">
+    <div class="startCard">
+      <div style="font-size:16px;font-weight:700">準備はいいですか？</div>
+      <div class="small" style="margin-top:8px">直感で答えてください。全15問、所要時間は約1分。</div>
+      <button id="startBtn" class="startBtn" aria-label="診断を始める">診断を始める</button>
+    </div>
+  </div>
 
-  <div class="card" id="card">
-    <div class="qnum" id="qnum">質問 1 / 10</div>
-    <div class="qtext" id="qtext">読み込み中...</div>
+  <div id="quizArea" style="display:none">
+    <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 
-    <div class="choices" id="choices"></div>
+    <div class="card" id="card">
+      <div class="qnum" id="qnum">質問 1 / 15</div>
+      <div class="qtext" id="qtext">読み込み中...</div>
 
-    <div class="nav">
-      <button class="btn ghost" id="prevBtn" aria-label="前の質問">戻る</button>
-      <button class="btn" id="nextBtn" aria-label="次の質問">次へ</button>
+      <div class="choices" id="choices"></div>
+
+      <div class="nav">
+        <button class="btn ghost" id="prevBtn" aria-label="前の質問">戻る</button>
+        <button class="btn" id="nextBtn" aria-label="次の質問">次へ</button>
+      </div>
     </div>
   </div>
 
   <div id="resultArea" style="display:none" class="result" aria-live="polite">
-    <div class="small">診断結果</div>
-    <div class="score" id="scoreText">0</div>
-    <div id="resultText" class="small">ここに結果の説明が入ります。</div>
+    <div class="small">診断結果（簡易表示）</div>
+    <div class="score" id="scoreText">0 / 60 点</div>
+    <div class="label" id="typeLabel">—タイプ</div>
+    <div id="resultText" class="small" style="margin-top:6px">ここにタイプの説明が入ります。</div>
+    <div class="small" style="margin-top:10px">偉人やキャラクターに例えると</div>
+    <div id="exampleText" class="small" style="margin-top:6px">例：シャーロック・ホームズのように冷静で分析的、または戦略家の一面を持つ人物など。</div>
 
-    <div class="small" style="margin-top:8px">共有する</div>
-    <div class="share" id="shareButtons">
+    <div class="small" style="margin-top:12px">共有する</div>
+    <div class="shareGrid" id="shareButtons">
       <div class="platform" id="shareNative">スマホ共有</div>
       <div class="platform" id="lineBtn">LINE</div>
       <div class="platform" id="xBtn">X（旧Twitter）</div>
@@ -70,7 +87,7 @@
       <div class="platform" id="copyBtn">結果をコピー</div>
     </div>
 
-    <div style="display:flex;gap:8px;margin-top:10px">
+    <div style="display:flex;gap:8px;margin-top:12px">
       <button class="btn ghost" id="retryBtn">もう一度</button>
     </div>
   </div>
@@ -78,28 +95,36 @@
 
 <script>
 /*
-  変更点：
-  - タイトルを「10問サイコパス診断 あなたの危険度は？」に設定
-  - 結果表示を「30点満点中 XX点」形式に変更（10問×最大3点＝30点満点）
-  - 共有ボタンを追加：LINE、X、Threads、Instagram、TikTok、Facebook、スマホネイティブ共有、コピー
+  変更点まとめ
+  - スタート画面を追加（「診断を始める」ボタンで開始）
+  - 質問を15問に増加
+  - 選択肢を5段階（0〜4）に変更 → 満点は 15×4 = 60 点
+  - 結果に「タイプ名」「説明」「偉人やキャラクター例」を表示
+  - 共有ボタンはネイティブ共有、LINE、X、Threads、Instagram、TikTok、Facebook、コピー
+  - 注意：簡易診断であり医療的診断ではありません（UI上に明記）
 */
 
-const MAX_SCORE = 30;
-
+const MAX_SCORE = 60;
+const NUM_Q = 15;
 const questions = [
-  "他人の感情に共感するのが苦手だと感じることがある。",
-  "ルールや法律を破っても罪悪感が薄い方だ。",
-  "自分の利益のためなら嘘をつくことがある。",
-  "他人を操作して自分の目的を達成することがある。",
-  "短期的な刺激やスリルを求める傾向が強い。",
-  "失敗や批判を受けてもあまり気にしない。",
-  "他人の痛みを見ても冷静でいられることがある。",
-  "責任を取るよりも言い訳をすることが多い。",
-  "人間関係を浅く保つ方が楽だと感じる。",
-  "他人の評価より自分の欲求を優先することが多い。"
+  "他人の感情を読み取るのが面倒に感じることが多い。",
+  "自分の目的のためなら、他人を利用しても構わないと考えることがある。",
+  "嘘をついても罪悪感がほとんど湧かない場面がある。",
+  "感情的な場面でも冷静さを保てることが多い。",
+  "リスクやスリルを求める行動をつい選んでしまう。",
+  "他人の評価より自分の利益を優先することが多い。",
+  "失敗しても深く反省せず、次に進むことが多い。",
+  "人との関係を深めるより、距離を保つ方が楽だと感じる。",
+  "他人の痛みや苦しみに対して無関心になりやすい。",
+  "責任を取るよりも、状況を自分に有利に変える言い訳を探すことがある。",
+  "計画のためには冷酷な判断も辞さないことがある。",
+  "他人を操作して自分の望む結果を引き出すのが得意だと感じる。",
+  "感情に流されず、合理的に物事を切り捨てることがある。",
+  "他人の成功や失敗に対して強い嫉妬や羨望を感じることがある。",
+  "自分の魅力や話術で人を引きつけることに長けている。"
 ];
 
-let answers = new Array(questions.length).fill(null);
+let answers = new Array(NUM_Q).fill(null);
 let idx = 0;
 
 const qnum = document.getElementById('qnum');
@@ -108,27 +133,42 @@ const choices = document.getElementById('choices');
 const bar = document.getElementById('bar');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
+const startBtn = document.getElementById('startBtn');
+const startScreen = document.getElementById('startScreen');
+const quizArea = document.getElementById('quizArea');
 const resultArea = document.getElementById('resultArea');
 const scoreText = document.getElementById('scoreText');
 const resultText = document.getElementById('resultText');
+const typeLabel = document.getElementById('typeLabel');
+const exampleText = document.getElementById('exampleText');
+
+const choiceLabels = [
+  "まったく当てはまらない",
+  "ほとんど当てはまらない",
+  "どちらとも言えない",
+  "やや当てはまる",
+  "非常に当てはまる"
+];
+
+function startQuiz(){
+  startScreen.style.display = 'none';
+  quizArea.style.display = 'block';
+  renderQuestion(0);
+}
+startBtn.addEventListener('click', startQuiz);
 
 function renderQuestion(i){
-  qnum.textContent = `質問 ${i+1} / ${questions.length}`;
+  idx = i;
+  qnum.textContent = `質問 ${i+1} / ${NUM_Q}`;
   qtext.textContent = questions[i];
   choices.innerHTML = '';
-  const labels = [
-    "当てはまらない",
-    "やや当てはまる",
-    "かなり当てはまる",
-    "非常に当てはまる"
-  ];
-  for(let v=0;v<4;v++){
+  for(let v=0; v<5; v++){
     const btn = document.createElement('div');
     btn.className = 'choice';
     btn.tabIndex = 0;
     btn.setAttribute('role','button');
     btn.setAttribute('data-value',v);
-    btn.innerHTML = `<div style="font-size:13px">${labels[v]}</div>`;
+    btn.innerHTML = `<div style="font-size:13px">${choiceLabels[v]}</div>`;
     if(answers[i] === v) btn.classList.add('selected');
     btn.addEventListener('click', ()=> selectChoice(i,v));
     btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter') selectChoice(i,v) });
@@ -145,11 +185,11 @@ function selectChoice(qIndex, val){
 
 function updateNav(){
   prevBtn.disabled = idx === 0;
-  nextBtn.textContent = idx === questions.length -1 ? '診断する' : '次へ';
+  nextBtn.textContent = idx === NUM_Q -1 ? '診断する' : '次へ';
 }
 
 function updateProgress(){
-  const pct = Math.round(((idx) / (questions.length)) * 100);
+  const pct = Math.round(((idx) / (NUM_Q)) * 100);
   bar.style.width = `${pct}%`;
 }
 
@@ -162,7 +202,7 @@ nextBtn.addEventListener('click', ()=>{
     alert('まずは選択肢を選んでください。');
     return;
   }
-  if(idx < questions.length -1){
+  if(idx < NUM_Q -1){
     idx++; renderQuestion(idx);
   } else {
     showResult();
@@ -175,29 +215,58 @@ function showResult(){
     if(!confirm('未回答の質問があります。それでも診断しますか？')) return;
   }
   const total = answers.reduce((s,v)=>s + (v===null?0:v),0);
-  // スコアは 0〜30（10問×0-3）なのでそのまま表示
   scoreText.textContent = `${total} / ${MAX_SCORE} 点`;
-  resultText.textContent = interpretScore(total);
+  const type = determineType(total);
+  typeLabel.textContent = `${type.label}（${type.tag}）`;
+  resultText.textContent = type.desc;
+  exampleText.textContent = type.example;
   document.getElementById('card').style.display = 'none';
   resultArea.style.display = 'block';
   bar.style.width = '100%';
-  // 更新：共有用テキストを準備
-  prepareShareData(total);
+  prepareShareData(total, type.label);
 }
 
-function interpretScore(s){
-  if(s <= 6) return '低リスク：共感や社会的ルールを重視する傾向があります。';
-  if(s <= 14) return '中程度：自己中心的な傾向が見られることがあります。注意が必要です。';
-  if(s <= 21) return '高め：冷淡さや操作的な行動が出やすい可能性があります。';
-  return '非常に高い：専門家の評価が望ましいレベルの傾向が見られます。';
+/* タイプ判定（抽象ラベリング） */
+function determineType(s){
+  // 0-60
+  if(s <= 12) return {
+    label: '協調タイプ',
+    tag: '低リスク',
+    desc: '共感や社会的ルールを重視する傾向が強く、他者との協調を大切にします。臨床的な診断ではありません。',
+    example: '例：フィクションの善良な助言者や、協調的なリーダーの一面に近い特徴。'
+  };
+  if(s <= 24) return {
+    label: '自己主張タイプ',
+    tag: 'やや低め',
+    desc: '自己中心的な判断をすることがあり、目的達成のために合理的に動く傾向があります。',
+    example: '例：冷静な交渉者や、目的志向の実務家に似た特徴。'
+  };
+  if(s <= 36) return {
+    label: '戦略家タイプ',
+    tag: '中程度',
+    desc: '感情より合理性を優先し、計画的に行動する傾向があります。対人で距離を置くことがあるかもしれません。',
+    example: '例：シャーロック・ホームズのように分析的で冷静な人物像の一部に似る特徴。'
+  };
+  if(s <= 48) return {
+    label: '冷徹タイプ',
+    tag: '高め',
+    desc: '他者の感情に無関心になりやすく、目的達成のために冷静な判断で行動する傾向があります。専門家の評価が望ましい場合があります。',
+    example: '例：歴史上の戦略家の一部の特徴に似ることがある、目的志向の強い人物像。'
+  };
+  return {
+    label: '非常に冷徹タイプ',
+    tag: '非常に高い',
+    desc: '感情的共感が乏しく、操作的・自己中心的な行動が目立つ可能性があります。臨床的な判断は専門家に委ねてください。',
+    example: '例：フィクションの冷徹な指導者や戦略家の極端な側面に近い特徴。'
+  };
 }
 
 /* 共有ロジック */
 let shareText = '';
 let shareUrl = location.href;
 
-function prepareShareData(total){
-  shareText = `10問サイコパス診断：${total} / ${MAX_SCORE}点\n${interpretScore(total)}\nあなたも診断してみてね。`;
+function prepareShareData(total, typeLabel){
+  shareText = `10問サイコパス診断：${total} / ${MAX_SCORE}点\nタイプ：${typeLabel}\n簡易診断です。`;
 }
 
 /* スマホネイティブ共有 */
@@ -227,21 +296,18 @@ document.getElementById('xBtn').addEventListener('click', ()=>{
 
 /* Threads */
 document.getElementById('threadsBtn').addEventListener('click', ()=>{
-  // Threads は web での事前投稿が限定的なため、テキストをコピーして threads.net を開く挙動にする
   copyToClipboardFallback(true, 'Threads を開きます。貼り付けて投稿してください。');
   window.open('https://www.threads.net/', '_blank');
 });
 
 /* Instagram */
 document.getElementById('instagramBtn').addEventListener('click', ()=>{
-  // Instagram はテキスト投稿の直接URLがないため、コピーしてアプリを開く
   copyToClipboardFallback(true, 'Instagram を開きます。キャプションに貼り付けて投稿してください。');
   window.open('https://www.instagram.com/', '_blank');
 });
 
 /* TikTok */
 document.getElementById('tiktokBtn').addEventListener('click', ()=>{
-  // TikTok も同様にコピーしてアプリへ誘導
   copyToClipboardFallback(true, 'TikTok を開きます。キャプションに貼り付けて投稿してください。');
   window.open('https://www.tiktok.com/', '_blank');
 });
@@ -263,7 +329,6 @@ document.getElementById('copyBtn').addEventListener('click', async ()=>{
 });
 
 function copyToClipboardFallback(showOpen=false, msg){
-  // フォールバック：テキストを prompt で表示して手動コピーを促す
   const toCopy = `${shareText}\n${shareUrl}`;
   try{
     prompt(msg || '以下をコピーしてSNSに貼ってください。', toCopy);
@@ -274,15 +339,16 @@ function copyToClipboardFallback(showOpen=false, msg){
 
 /* リトライ */
 document.getElementById('retryBtn').addEventListener('click', ()=>{
-  answers = new Array(questions.length).fill(null);
+  answers = new Array(NUM_Q).fill(null);
   idx = 0;
   document.getElementById('card').style.display = 'block';
   resultArea.style.display = 'none';
-  renderQuestion(0);
+  startScreen.style.display = 'block';
+  quizArea.style.display = 'none';
+  bar.style.width = '0%';
 });
 
-// 初期表示
-renderQuestion(0);
+/* 初期表示はスタート画面 */
 </script>
 </body>
 </html>
