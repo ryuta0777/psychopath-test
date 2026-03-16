@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>サイコパス診断</title>
+</head>
+
+<body>
+
+<h1>サイコパス診断</h1>
+
+<p>人が困っているのを見ると？</p>
+
+<button onclick="score+=0">助ける</button>
+<button onclick="score+=1">面倒</button>
+<button onclick="score+=2">興味ない</button>
+
+<br><br>
+
+<button onclick="showResult()">結果を見る</button>
+
+<h2 id="result"></h2>
+
+<script>
+
+let score = 0;
+
+function showResult(){
+
+let result = "";
+
+if(score <=5){
+result="あなたは共感力が高いタイプ";
+}
+
+else if(score <=10){
+result="一般的な性格";
+}
+
+else if(score <=15){
+result="サイコパス傾向あり";
+}
+
+else{
+result="かなりサイコパス気質";
+}
+
+document.getElementById("result").innerText=result;
+
+}
+
+</script>
+
+</body>
+
+</html>
