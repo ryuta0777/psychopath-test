@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>10問サイコパス診断（ショート向け）</title>
+<title>10問サイコパス診断 あなたの危険度は？</title>
 <style>
   :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2;--white:#eef2f7}
   html,body{height:100%}
@@ -23,11 +23,13 @@
   .btn{background:var(--accent);color:#111;padding:8px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer}
   .btn.ghost{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
   .result{padding:12px;margin-top:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))}
-  .score{font-size:28px;font-weight:800;color:var(--accent);margin:6px 0}
-  .share{display:flex;gap:8px;margin-top:10px}
+  .score{font-size:20px;font-weight:800;color:var(--accent);margin:6px 0}
+  .share{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
   .small{font-size:12px;color:var(--muted)}
+  .platform{flex:1 1 48%;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
   @media (max-width:420px){
     .choice{flex-basis:100%}
+    .platform{flex-basis:48%}
     .wrap{padding:14px}
   }
 </style>
@@ -35,7 +37,7 @@
 <body>
 <div class="wrap" role="application" aria-label="サイコパス診断アプリ">
   <div class="title">10問サイコパス診断</div>
-  <div class="desc">直感で答えてね。結果はシェアできるよ。</div>
+  <div class="desc">あなたの危険度は？ 直感で答えてね。結果はSNSでシェアできます。</div>
 
   <div class="progress" aria-hidden="true"><i id="bar"></i></div>
 
@@ -55,9 +57,20 @@
     <div class="small">診断結果</div>
     <div class="score" id="scoreText">0</div>
     <div id="resultText" class="small">ここに結果の説明が入ります。</div>
-    <div class="share">
-      <button class="btn" id="shareBtn">結果をシェア</button>
-      <button class="btn ghost" id="tweetBtn">Twitterで共有</button>
+
+    <div class="small" style="margin-top:8px">共有する</div>
+    <div class="share" id="shareButtons">
+      <div class="platform" id="shareNative">スマホ共有</div>
+      <div class="platform" id="lineBtn">LINE</div>
+      <div class="platform" id="xBtn">X（旧Twitter）</div>
+      <div class="platform" id="threadsBtn">Threads</div>
+      <div class="platform" id="instagramBtn">Instagram</div>
+      <div class="platform" id="tiktokBtn">TikTok</div>
+      <div class="platform" id="facebookBtn">Facebook</div>
+      <div class="platform" id="copyBtn">結果をコピー</div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn ghost" id="retryBtn">もう一度</button>
     </div>
   </div>
@@ -65,10 +78,13 @@
 
 <script>
 /*
-  シンプルな10問診断（教育目的の簡易コンテンツ）
-  各質問は 0〜3 の4段階でスコア化（0:当てはまらない 3:非常に当てはまる）
-  合計点でリスク判定を表示
+  変更点：
+  - タイトルを「10問サイコパス診断 あなたの危険度は？」に設定
+  - 結果表示を「30点満点中 XX点」形式に変更（10問×最大3点＝30点満点）
+  - 共有ボタンを追加：LINE、X、Threads、Instagram、TikTok、Facebook、スマホネイティブ共有、コピー
 */
+
+const MAX_SCORE = 30;
 
 const questions = [
   "他人の感情に共感するのが苦手だと感じることがある。",
@@ -95,9 +111,6 @@ const nextBtn = document.getElementById('nextBtn');
 const resultArea = document.getElementById('resultArea');
 const scoreText = document.getElementById('scoreText');
 const resultText = document.getElementById('resultText');
-const shareBtn = document.getElementById('shareBtn');
-const tweetBtn = document.getElementById('tweetBtn');
-const retryBtn = document.getElementById('retryBtn');
 
 function renderQuestion(i){
   qnum.textContent = `質問 ${i+1} / ${questions.length}`;
@@ -136,9 +149,8 @@ function updateNav(){
 }
 
 function updateProgress(){
-  const answered = answers.filter(a=>a!==null).length;
-  const pct = Math.round((idx / (questions.length)) * 100);
-  bar.style.width = `${Math.round(((idx)/questions.length)*100)}%`;
+  const pct = Math.round(((idx) / (questions.length)) * 100);
+  bar.style.width = `${pct}%`;
 }
 
 prevBtn.addEventListener('click', ()=>{
@@ -147,7 +159,6 @@ prevBtn.addEventListener('click', ()=>{
 
 nextBtn.addEventListener('click', ()=>{
   if(answers[idx] === null){
-    // 未回答なら軽く促す
     alert('まずは選択肢を選んでください。');
     return;
   }
@@ -159,54 +170,110 @@ nextBtn.addEventListener('click', ()=>{
 });
 
 function showResult(){
-  // 未回答があれば促す
   const missing = answers.some(a=>a===null);
   if(missing){
     if(!confirm('未回答の質問があります。それでも診断しますか？')) return;
   }
   const total = answers.reduce((s,v)=>s + (v===null?0:v),0);
-  scoreText.textContent = total;
+  // スコアは 0〜30（10問×0-3）なのでそのまま表示
+  scoreText.textContent = `${total} / ${MAX_SCORE} 点`;
   resultText.textContent = interpretScore(total);
   document.getElementById('card').style.display = 'none';
   resultArea.style.display = 'block';
   bar.style.width = '100%';
+  // 更新：共有用テキストを準備
+  prepareShareData(total);
 }
 
 function interpretScore(s){
-  // 0-30 の範囲（10問×0-3）
   if(s <= 6) return '低リスク：共感や社会的ルールを重視する傾向があります。';
   if(s <= 14) return '中程度：自己中心的な傾向が見られることがあります。注意が必要です。';
   if(s <= 21) return '高め：冷淡さや操作的な行動が出やすい可能性があります。';
   return '非常に高い：専門家の評価が望ましいレベルの傾向が見られます。';
 }
 
-shareBtn.addEventListener('click', async ()=>{
-  const text = `サイコパス診断の結果：スコア ${scoreText.textContent}\n${resultText.textContent}\nあなたも診断してみてね。`;
-  const url = location.href;
+/* 共有ロジック */
+let shareText = '';
+let shareUrl = location.href;
+
+function prepareShareData(total){
+  shareText = `10問サイコパス診断：${total} / ${MAX_SCORE}点\n${interpretScore(total)}\nあなたも診断してみてね。`;
+}
+
+/* スマホネイティブ共有 */
+document.getElementById('shareNative').addEventListener('click', async ()=>{
   if(navigator.share){
     try{
-      await navigator.share({title:'サイコパス診断',text, url});
+      await navigator.share({title:'10問サイコパス診断', text: shareText, url: shareUrl});
     }catch(e){
       alert('共有がキャンセルされました。');
     }
   } else {
-    // フォールバック：クリップボードにコピー
-    try{
-      await navigator.clipboard.writeText(`${text}\n${url}`);
-      alert('結果をコピーしました。SNSに貼ってシェアできます。');
-    }catch(e){
-      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-    }
+    copyToClipboardFallback();
   }
 });
 
-tweetBtn.addEventListener('click', ()=>{
-  const text = `サイコパス診断の結果：スコア ${scoreText.textContent}\n${resultText.textContent}`;
-  const url = location.href;
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+/* LINE */
+document.getElementById('lineBtn').addEventListener('click', ()=>{
+  const url = `https://line.me/R/msg/text/?${encodeURIComponent(shareText + '\n' + shareUrl)}`;
+  window.open(url, '_blank');
 });
 
-retryBtn.addEventListener('click', ()=>{
+/* X (旧Twitter) */
+document.getElementById('xBtn').addEventListener('click', ()=>{
+  const url = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+  window.open(url, '_blank');
+});
+
+/* Threads */
+document.getElementById('threadsBtn').addEventListener('click', ()=>{
+  // Threads は web での事前投稿が限定的なため、テキストをコピーして threads.net を開く挙動にする
+  copyToClipboardFallback(true, 'Threads を開きます。貼り付けて投稿してください。');
+  window.open('https://www.threads.net/', '_blank');
+});
+
+/* Instagram */
+document.getElementById('instagramBtn').addEventListener('click', ()=>{
+  // Instagram はテキスト投稿の直接URLがないため、コピーしてアプリを開く
+  copyToClipboardFallback(true, 'Instagram を開きます。キャプションに貼り付けて投稿してください。');
+  window.open('https://www.instagram.com/', '_blank');
+});
+
+/* TikTok */
+document.getElementById('tiktokBtn').addEventListener('click', ()=>{
+  // TikTok も同様にコピーしてアプリへ誘導
+  copyToClipboardFallback(true, 'TikTok を開きます。キャプションに貼り付けて投稿してください。');
+  window.open('https://www.tiktok.com/', '_blank');
+});
+
+/* Facebook */
+document.getElementById('facebookBtn').addEventListener('click', ()=>{
+  const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+  window.open(url, '_blank');
+});
+
+/* コピー */
+document.getElementById('copyBtn').addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+    alert('結果をコピーしました。SNSに貼ってシェアできます。');
+  }catch(e){
+    copyToClipboardFallback();
+  }
+});
+
+function copyToClipboardFallback(showOpen=false, msg){
+  // フォールバック：テキストを prompt で表示して手動コピーを促す
+  const toCopy = `${shareText}\n${shareUrl}`;
+  try{
+    prompt(msg || '以下をコピーしてSNSに貼ってください。', toCopy);
+  }catch(e){
+    alert('共有機能が利用できません。結果を手動でコピーしてください。');
+  }
+}
+
+/* リトライ */
+document.getElementById('retryBtn').addEventListener('click', ()=>{
   answers = new Array(questions.length).fill(null);
   idx = 0;
   document.getElementById('card').style.display = 'block';
